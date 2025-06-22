@@ -23,9 +23,10 @@ Konsumsi energi pada sektor bangunan menyumbang lebih dari 36% dari total konsum
 
 ### Goals
 
-- Membangun dan membandingkan performa beberapa algoritma untuk memilih model terbaik berdasarkan akurasi prediksi dan efisiensi komputasi.
-- Menyediakan sistem pendukung keputusan bagi pengelola gedung dalam mengoptimalkan konsumsi energi.
-
+- Mengembangkan model prediksi konsumsi energi dengan akurasi yang baik menggunakan pendekatan machine learning.
+- Menyediakan sistem prediktif yang dapat membantu operator bangunan mengantisipasi lonjakan konsumsi.
+- Membandingkan performa beberapa model dan memilih yang paling sesuai dengan karakteristik data.
+  
 ### Solution Statements
 
 - Membangun model prediksi konsumsi energi menggunakan algoritma Ridge Regression, Lasso Regression, Random Forest, dan XGBoost.
@@ -41,18 +42,19 @@ Dataset diambil dari Kaggle dengan judul: [Energy Consumption Prediction](https:
 
 ### Informasi Dataset:
 
-- **Jumlah data**: 15.187 baris × 10 kolom
+- **Jumlah data**: 1.000 baris × 11 kolom
 - **Kondisi data**:
   - Tidak terdapat missing values
-  - Terdapat beberapa outlier yang ditangani dengan visualisasi distribusi
+  - Tidak terdapat beberapa outlier
   - Tidak ada duplikasi data
-- **Sumber data**: Kaggle (tautan di atas)
+- **Sumber data**: [Energy Consumption Prediction](https://www.kaggle.com/datasets/mrsimple07/energy-consumption-prediction/data).
 - **Target variabel**: `EnergyConsumption`
 
 ### Fitur Dataset:
 
 | Fitur              | Deskripsi                                          |
 |--------------------|----------------------------------------------------|
+| Timestamp        | Waktu pencatatan             |
 | Temperature        | Suhu sekitar dalam derajat Celcius                 |
 | Humidity           | Kelembapan lingkungan (%)                          |
 | SquareFootage      | Luas area bangunan (sqft)                          |
