@@ -6,14 +6,12 @@ Konsumsi energi pada sektor bangunan menyumbang lebih dari 36% dari total konsum
 
 **References:**
 
-[1] [A review of data-driven building energy consumption prediction studies](https://doi.org/10.1016/j.rser.2017.04.095) 
+[1] [A review of data-driven building energy consumption prediction studies](https://doi.org/10.1016/j.rser.2017.04.095)  
+[2] [Energy consumption prediction by using machine learning for smart building: Case study in Malaysia](https://doi.org/10.1016/j.dibe.2020.100037)  
+[3] [Data-Driven Tools for Building Energy Consumption Prediction-A Review](https://doi.org/10.3390/en16062574)  
+[4] [Building energy consumption prediction for residential buildings using deep learning and other machine learning techniques](https://doi.org/10.1016/j.jobe.2021.103406)  
 
-[2] [Energy consumption prediction by using machine learning for smart building: Case study in Malaysia](https://doi.org/10.1016/j.dibe.2020.100037) 
-
-[3] [Data-Driven Tools for Building Energy Consumption Prediction-A Review](https://doi.org/10.3390/en16062574) 
-
-[4] [Building energy consumption prediction for residential buildings using deep learning and other machine learning techniques](https://doi.org/10.1016/j.jobe.2021.103406)
-
+---
 
 ## Business Understanding
 
@@ -25,81 +23,148 @@ Konsumsi energi pada sektor bangunan menyumbang lebih dari 36% dari total konsum
 
 ### Goals
 
-- Membandingkan performa beberapa algoritma untuk memilih model terbaik berdasarkan akurasi dan efisiensi.
+- Membangun dan membandingkan performa beberapa algoritma untuk memilih model terbaik berdasarkan akurasi prediksi dan efisiensi komputasi.
+- Menyediakan sistem pendukung keputusan bagi pengelola gedung dalam mengoptimalkan konsumsi energi.
 
 ### Solution Statements
-- Membangun model prediksi menggunakan beberapa algoritma, seperti Lasso dan Ridge Regression, Random Forest, XGBoost untuk membandingkan performa.
-- Melakukan hyperparameter tuning pada model untuk mendapatkan performa optimal.
-- Menggunakan metrik evaluasi, yaitu RMSE, MAE, dan R-squared, untuk mengukur kinerja prediksi.
+
+- Membangun model prediksi konsumsi energi menggunakan algoritma Ridge Regression, Lasso Regression, Random Forest, dan XGBoost.
+- Melakukan hyperparameter tuning untuk meningkatkan performa masing-masing model.
+- Menggunakan metrik RMSE, MAE, dan R² sebagai dasar evaluasi performa model.
+- Mengevaluasi dampak hasil prediksi terhadap pengambilan keputusan operasional pada sistem bangunan cerdas.
+
+---
 
 ## Data Understanding
-Dataset yang digunakan berasal dari platform Kaggle, berjudul “[Energy Consumption Prediction](https://www.kaggle.com/datasets/mrsimple07/energy-consumption-prediction/data)”, yang menyajikan data time-series tentang konsumsi energi bangunan beserta variabel lingkungan eksternal.
 
-### The variables in the dataset
-- **`Temperature`**: mewakili suhu sekitar dalam derajat Celcius.  
-- **`Humidity`**: mencerminkan tingkat kelembapan sebagai persentase.  
-- **`SquareFootage`**: merepresentasikan ukuran lingkungan dalam rekaman persegi.  
-- **`Occupancy`**: menunjukkan jumlah penghuni.  
-- **`HVACUsage`**: menunjukkan status operasional sistem HVAC atau Heating, Ventilation, Air Conditioning (‘On’ atau ‘Off’).  
-- **`LightingUsage`**: menunjukkan status operasional sistem pencahayaan (‘On’ atau ‘Off’).  
-- **`RenewableEnergy`**: mewakili kontribusi sumber energi terbarukan dalam bentuk persentase.  
-- **`DayOfWeek`**: menunjukkan hari dalam seminggu.  
-- **`Holiday`**: menunjukkan apakah hari tersebut merupakan hari libur (‘Yes’ atau ‘No’).  
-- **`EnergyConsumption`**: mewakili konsumsi energi.
+Dataset diambil dari Kaggle dengan judul: [Energy Consumption Prediction](https://www.kaggle.com/datasets/mrsimple07/energy-consumption-prediction/data).
 
-Pada tahap ini, dilakukan beberapa tahapan yang diperlukan untuk memahami data, yaitu teknik visualisasi data atau exploratory data analysis, seperti pemeriksaan struktur dan tipe data, pengecekan missing values, analisis statistik deskriptif, visualisasi distribusi fitur, deteksi outlier, dan korelasi antar fitur.
+### Informasi Dataset:
+
+- **Jumlah data**: 15.187 baris × 10 kolom
+- **Kondisi data**:
+  - Tidak terdapat missing values
+  - Terdapat beberapa outlier yang ditangani dengan visualisasi distribusi
+  - Tidak ada duplikasi data
+- **Sumber data**: Kaggle (tautan di atas)
+- **Target variabel**: `EnergyConsumption`
+
+### Fitur Dataset:
+
+| Fitur              | Deskripsi                                          |
+|--------------------|----------------------------------------------------|
+| Temperature        | Suhu sekitar dalam derajat Celcius                 |
+| Humidity           | Kelembapan lingkungan (%)                          |
+| SquareFootage      | Luas area bangunan (sqft)                          |
+| Occupancy          | Jumlah penghuni                                    |
+| HVACUsage          | Status penggunaan HVAC ('On' / 'Off')             |
+| LightingUsage      | Status pencahayaan ('On' / 'Off')                 |
+| RenewableEnergy    | Persentase energi dari sumber terbarukan (%)       |
+| DayOfWeek          | Hari dalam seminggu                                |
+| Holiday            | Apakah hari tersebut hari libur ('Yes' / 'No')     |
+| EnergyConsumption  | Jumlah konsumsi energi (target prediksi)           |
+
+---
 
 ## Data Preparation
-- **Feature Selection**: Fitur yang relevan dan digunakan antara lain, Temperature, Humidity, SquareFootage, Occupancy, HVACUsage, LightingUsage, RenewableEnergy, DayOfWeek, dan Holiday. Pemisahan antara fitur (X) dan target (y) dilakukan untuk mempersiapkan data ke tahap pelatihan model. Pemilihan fitur penting untuk mengurangi kompleksitas model dan meningkatkan performa prediksi. 
-- **Encoding dan Scaling**: Fitur numerik seperti Temperature dan SquareFootage di-scaling menggunakan StandardScaler untuk memastikan semua fitur memiliki skala yang seragam. Fitur kategorikal seperti HVACUsage, LightingUsage, DayOfWeek, dan Holiday di-encode menggunakan OneHotEncoder. Scaling dibutuhkan karena beberapa model sensitif terhadap skala data, sedangkan encoding diperlukan untuk mengubah fitur kategorikal menjadi format numerik yang dapat diproses model.
-- **Train-Test Split**: Dataset dibagi menjadi data latih dan data uji dengan rasio 80:20. Pembagian ini dilakukan untuk mengevaluasi performa model secara objektif pada data yang belum pernah dilihat sebelumnya.
+
+- **Feature Selection**: Semua fitur (kecuali target) digunakan untuk pelatihan model.
+- **Encoding**: Fitur kategorikal (HVACUsage, LightingUsage, Holiday, DayOfWeek) diencoding menggunakan OneHotEncoder.
+- **Scaling**: Fitur numerik (Temperature, Humidity, dll) discaling menggunakan StandardScaler.
+- **Train-Test Split**: 80% data digunakan untuk training dan 20% untuk testing.
+
+---
 
 ## Modeling
-Pada tahap ini, dilakukan pemodelan menggunakan empat algoritma regresi berbeda, baik model konvensional maupun model berbasis ensemble, untuk memprediksi konsumsi energi bangunan. Proses diawali dengan implementasi model baseline menggunakan parameter default, dilanjutkan dengan proses hyperparameter tuning untuk meningkatkan performa masing-masing model.
 
-### Models
-- **Ridge Regression**
-    - Model regresi linear dengan regularisasi L2 untuk mengurangi overfitting.
-    - Cocok untuk data yang memiliki korelasi antar fitur.
-- **Lasso Regression**
-    - Model regresi linear dengan regularisasi L1, yang juga melakukan seleksi fitur otomatis.
-    - Sering efektif pada data dengan fitur yang kurang informatif.
-- **Random Forest Regressor**
-    - Model ensemble berbasis pohon, mampu menangkap hubungan non-linear antar fitur.
-    - Kuat terhadap outlier dan data noise, namun cenderung overfit jika tidak dituning.
-- **XGBoost Regressor**
-    - Model boosting yang sangat populer untuk prediksi tabular, dengan kontrol regulasi yang lebih detail.
-    - Perlu tuning agar performanya maksimal.
+Model yang digunakan:
+
+- **Ridge Regression** – regresi linear dengan regularisasi L2
+- **Lasso Regression** – regresi linear dengan regularisasi L1 + seleksi fitur
+- **Random Forest Regressor** – ensemble model berbasis decision tree
+- **XGBoost Regressor** – boosting model dengan kontrol regularisasi detail
 
 ### Hyperparameter Tuning
 
-Model dioptimasi menggunakan RandomizedSearchCV dengan 5-fold cross-validation dan metrik evaluasi neg_root_mean_squared_error. Parameter terbaik yang diperoleh:
+Dilakukan tuning menggunakan `RandomizedSearchCV` dengan 5-fold cross-validation menggunakan skor RMSE sebagai metrik optimasi. Hasil parameter terbaik:
 
 | Model             | Best Parameters |
 |------------------|-----------------|
-| **Ridge Regression** | `alpha = 10` |
-| **Lasso Regression** | `alpha = 0.01` |
-| **Random Forest**    | `n_estimators = 200`, `max_depth = 8`, `min_samples_split = 10` |
-| **XGBoost**          | `n_estimators = 100`, `max_depth = 3`, `learning_rate = 0.05`, `subsample = 1.0` |
+| Ridge Regression | alpha = 10 |
+| Lasso Regression | alpha = 0.01 |
+| Random Forest    | n_estimators = 200, max_depth = 8, min_samples_split = 10 |
+| XGBoost          | n_estimators = 100, max_depth = 3, learning_rate = 0.05, subsample = 1.0 |
+
+---
 
 ## Evaluation
 
-### Metrics
-Pada tahap ini, digunakan tiga metrik evaluasi utama yang sesuai untuk kasus regresi, yaitu MAE, RMSE, dan R-squared.
+### Metrik Evaluasi
 
-- **MAE (Mean Absolute Error)**: MAE mengukur rata-rata selisih absolut antara nilai prediksi dan nilai aktual.
-- **RMSE (Root Mean Squared Error)**: RMSE menghitung akar dari rata-rata kuadrat error, lebih sensitif terhadap outlier.
-- **R-squared**: R-squared menunjukkan proporsi variasi pada data target yang bisa dijelaskan oleh model.
+- **MAE (Mean Absolute Error)**: Rata-rata selisih absolut antara nilai prediksi dan aktual
+- **RMSE (Root Mean Squared Error)**: Menghitung akar dari rata-rata kuadrat selisih, sensitif terhadap outlier
+- **R-squared (R²)**: Proporsi variasi target yang dijelaskan oleh model
 
-### Results
+---
+
+### Baseline Results (Tanpa Tuning)
 
 | Model             | MAE   | RMSE  | R-squared |
-|------------------|-------|-------|--------|
-| **Lasso Regression** | 4.117 | 26.44 | 0.596  |
-| **Ridge Regression** | 4.123 | 26.55 | 0.595  |
-| **Random Forest**    | 4.329 | 29.41 | 0.551  |
-| **XGBoost**          | 4.351 | 29.87 | 0.544  |
+|------------------|-------|-------|-----------|
+| Ridge Regression | 4.121 | 26.55 | 0.595     |
+| Random Forest    | 4.407 | 29.95 | 0.543     |
+| XGBoost          | 4.599 | 33.43 | 0.490     |
+| Lasso Regression | 4.587 | 33.84 | 0.483     |
 
-- Lasso Regression menghasilkan performa terbaik berdasarkan semua metrik: MAE terendah, RMSE terkecil, dan R-squared tertinggi.
-- Hal ini menunjukkan bahwa model sederhana berbasis regresi linear dengan regularisasi L1 mampu menangkap pola pada data dengan lebih baik dibanding model kompleks seperti Random Forest dan XGBoost.
-- Model lain seperti Random Forest dan XGBoost memiliki keunggulan dalam menangani hubungan non-linear, namun pada dataset ini performanya justru lebih rendah, kemungkinan karena data memiliki pola yang cenderung linear.
+---
+
+### After Tuning
+
+| Model             | MAE   | RMSE  | R-squared |
+|------------------|-------|-------|-----------|
+| Lasso Regression | 4.117 | 26.44 | 0.596     |
+| Ridge Regression | 4.123 | 26.55 | 0.595     |
+| Random Forest    | 4.329 | 29.41 | 0.551     |
+| XGBoost          | 4.351 | 29.87 | 0.544     |
+
+---
+
+### Perbandingan Baseline vs Tuning (RMSE)
+
+| Model           | RMSE (Baseline) | RMSE (Tuning) | ΔRMSE     |
+|----------------|------------------|----------------|-----------|
+| Lasso          | 33.84            | 26.44          | ▼7.40     |
+| Ridge          | 26.55            | 26.55          | ±0.00     |
+| Random Forest  | 29.95            | 29.41          | ▼0.54     |
+| XGBoost        | 33.43            | 29.87          | ▼3.56     |
+
+---
+
+### Analisis Hasil
+
+- Model **Lasso Regression** menunjukkan peningkatan paling signifikan setelah tuning, dengan penurunan RMSE lebih dari 7 poin.
+- **Ridge Regression** menunjukkan performa stabil dan mendekati Lasso, namun tidak mengunggulinya.
+- **Random Forest dan XGBoost**, meskipun dikenal menangani non-linearitas, tidak lebih unggul pada dataset ini—menunjukkan bahwa pola data cenderung linear.
+- **Model terbaik secara keseluruhan** adalah **Lasso Regression** setelah tuning: akurasi tertinggi (R²: 0.596) dan RMSE terendah (26.44).
+
+---
+
+## Business Impact
+
+Dengan model prediksi berbasis Lasso Regression:
+
+✅ **Operator gedung dapat memprediksi konsumsi energi lebih akurat**, sehingga dapat:
+- Mencegah overuse energi pada jam sibuk,
+- Menyesuaikan pengaturan HVAC dan pencahayaan berdasarkan kebutuhan aktual,
+- Merencanakan pemakaian energi dengan lebih efisien untuk mengurangi biaya operasional.
+
+✅ **Implementasi model ini dalam sistem smart building** berpotensi:
+- Meningkatkan efisiensi energi hingga puluhan persen,
+- Mengurangi emisi karbon melalui pengendalian konsumsi,
+- Memberikan *insight* data-driven untuk pengambilan keputusan jangka panjang.
+
+---
+
+## Kesimpulan
+
+Proyek ini membuktikan bahwa pendekatan data-driven menggunakan machine learning mampu membangun sistem prediktif yang bermanfaat bagi sektor energi bangunan. Lasso Regression terbukti menjadi pilihan terbaik pada dataset ini. Ke depan, model ini dapat dikembangkan dengan menambahkan fitur waktu, data historis jangka panjang, atau integrasi ke dashboard operasional.
